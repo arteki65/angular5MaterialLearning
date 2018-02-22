@@ -10,7 +10,7 @@ import {Subscription} from 'rxjs/Subscription';
 export class HeaderComponent implements OnInit, OnDestroy {
   @Output() sidenavToggle = new EventEmitter<void>();
   isAuth = false;
-  authSubscription: Subscription;
+  private authSubscription: Subscription;
 
   constructor(private authService: AuthService) { }
 
@@ -22,6 +22,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   onToggleSidenav() {
     this.sidenavToggle.emit();
+  }
+
+  onLogout() {
+    this.authService.logout();
   }
 
   ngOnDestroy(): void {
