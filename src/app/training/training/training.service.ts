@@ -2,6 +2,7 @@ import {Exercise} from './exercise.model';
 import {Subject} from 'rxjs/Subject';
 import {Injectable} from '@angular/core';
 import {AngularFirestore} from 'angularfire2/firestore';
+import {Subscription} from 'rxjs/Subscription';
 
 @Injectable()
 export class TrainingService {
@@ -10,13 +11,14 @@ export class TrainingService {
   finishedExercisesChanged = new Subject<Exercise[]>();
   private availableExercises: Exercise[] = [];
   private runningExercise: Exercise;
+  private firebaseSubscriptions: Subscription[] = [];
 
 
   constructor(private dbService: AngularFirestore) {
   }
 
-  fetchtAvailableExercises() {
-    this.dbService.collection('availableExercises').snapshotChanges()
+  fetchAvailableExercises() {
+    this.firebaseSubscriptions.push(this.dbService.collection('availableExercises').snapshotChanges()
       .map(docArray => {
         return docArray.map(doc => {
           return {
@@ -28,9 +30,8 @@ export class TrainingService {
       .subscribe((exercises: Exercise[]) => {
           this.availableExercises = exercises;
           this.availableExercisesChanged.next([...this.availableExercises]);
-        }
-      )
-    ;
+        }, error => console.log('error while fetching available exercises: ', error)
+      ));
   }
 
   startExercise(selectedId: string) {
@@ -67,12 +68,16 @@ export class TrainingService {
   }
 
   fetchPastExercises() {
-    this.dbService.collection('finishedExercises').valueChanges().subscribe((exercises: Exercise[]) => {
+    this.firebaseSubscriptions.push(this.dbService.collection('finishedExercises').valueChanges().subscribe((exercises: Exercise[]) => {
       this.finishedExercisesChanged.next(exercises);
-    });
+    }, error => console.log('error while fetching past exercises: ', error)));
   }
 
-  private addDataToDb(exercies: Exercise) {
-    this.dbService.collection('finishedExercises').add(exercies);
+  cancelSubscriptions() {
+    this.firebaseSubscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
+  private addDataToDb(exercises: Exercise) {
+    this.dbService.collection('finishedExercises').add(exercises);
   }
 }
