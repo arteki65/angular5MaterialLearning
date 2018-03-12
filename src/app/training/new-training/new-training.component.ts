@@ -11,7 +11,8 @@ import {Exercise} from '../training/exercise.model';
 })
 export class NewTrainingComponent implements OnInit, OnDestroy {
   availableTrainings: Exercise[] = [];
-  private availableExerciesSubscription = new Subscription();
+  private availableExercisesSubscription = new Subscription();
+
 
   constructor(private trainingService: TrainingService) {
   }
@@ -22,7 +23,7 @@ export class NewTrainingComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.availableExerciesSubscription.unsubscribe();
+    this.availableExercisesSubscription.unsubscribe();
   }
 
   onStartTraining(form: NgForm) {
