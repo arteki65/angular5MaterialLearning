@@ -33,8 +33,13 @@ export class TrainingService {
       .subscribe((exercises: Exercise[]) => {
           this.availableExercises = exercises;
           this.availableExercisesChanged.next([...this.availableExercises]);
-        this.uiService.loadingStateChanged.next(false);
-        }, error => console.log('error while fetching available exercises: ', error)
+          this.uiService.loadingStateChanged.next(false);
+        },
+        error => {
+          this.uiService.loadingStateChanged.next(false);
+          this.uiService.showSnackBar('Fethcing exercises failed!', null);
+          this.availableExercisesChanged.next(null);
+        }
       ));
   }
 

@@ -26,6 +26,10 @@ export class NewTrainingComponent implements OnInit, OnDestroy {
     this.trainingService.availableExercisesChanged.subscribe(exercises => {
       this.availableTrainings = exercises;
     });
+    this.fetchExercises();
+  }
+
+  fetchExercises() {
     this.trainingService.fetchAvailableExercises();
   }
 
