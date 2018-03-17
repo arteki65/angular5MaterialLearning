@@ -1,5 +1,4 @@
 import {Exercise} from './exercise.model';
-import {Subject} from 'rxjs/Subject';
 import {Injectable} from '@angular/core';
 import {AngularFirestore} from 'angularfire2/firestore';
 import {Subscription} from 'rxjs/Subscription';
@@ -12,6 +11,8 @@ import {Store} from '@ngrx/store';
 @Injectable()
 export class TrainingService {
   private firebaseSubscriptions: Subscription[] = [];
+  private runningExercise: any;
+  finishedExercisesChanged: any;
 
   constructor(private dbService: AngularFirestore,
               private uiService: UIService,
@@ -36,7 +37,6 @@ export class TrainingService {
         () => {
           this.store.dispatch(new UI.StopLoading());
           this.uiService.showSnackBar('Fethcing exercises failed!', null);
-          this.availableExercisesChanged.next(null);
         }
       ));
   }
